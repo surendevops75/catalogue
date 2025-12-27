@@ -36,6 +36,15 @@ pipeline {
                 }
             }
         }
+        stage('Unit Test') {
+            steps {
+                script{
+                    sh """
+                        npm test
+                    """
+                }
+            }
+        }
         stage('Build image') {
             steps {
                 withAWS(region:'us-east-1',credentials:'aws-creds') {
