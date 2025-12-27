@@ -8,6 +8,9 @@ pipeline {
     environment {
         COURSE = "Jenkins"
         appVersion = ""
+        ACC_ID = "231298815636"
+        PROJECT = "roboshop"
+        COMPONENT = "catalogue"
     }
     options {
         timeout(time: 10, unit: 'MINUTES')
@@ -33,26 +36,19 @@ pipeline {
                 }
             }
         }
-        stage('Deploy') {
-            // input {
-            //     message "Should we continue?"
-            //     ok "Yes, we should."
-            //     submitter "alice,bob"
-            //     parameters {
-            //         string(name: 'PERSON', defaultValue: 'Mr Jenkins', description: 'Who should I say hello to?')
-            //     }
-            // }
-            when { 
-                expression { "$params.DEPLOY" == "true" }
-            }
+        stage('Build image') {
             steps {
-               script{
-                    sh """
-                        echo "Deploying"
-                    """
-                }
+                withAWS(region:'us-east-1',credentials:'aws-creds') {
+                        sh """
+                            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com
+                            docker build -t ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${appVersion} .
+                            docker images
+                            docker push ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${appVersion}
+                        """
+                    }
             }
         }
+        
     }
     post{
         always{
