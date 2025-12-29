@@ -45,15 +45,17 @@ pipeline {
                 }
             }
         }
-        stage('Sonar Scan'){
+        stage('Sonar Scan') {
             steps {
                 script {
                     def scannerHome = tool 'sonar-8.0'
 
                     withSonarQubeEnv('sonar-server') {
                         sh "${scannerHome}/bin/sonar-scanner"
-               }
             }
+        }
+    }
+}
         }
         stage('Build image') {
             steps {
