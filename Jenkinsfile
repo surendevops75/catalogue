@@ -93,7 +93,7 @@ pipeline {
                 }
             }
         }
-        stage('Read Version') {
+        stage('Trivy Scan') {
             steps {
                 script {
                     sh """
